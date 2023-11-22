@@ -1,10 +1,8 @@
 import { useState } from "react";
-
-// const initialItems = [
-//   { id: 1, description: "Passports", quantity: 2, packed: false },
-//   { id: 2, description: "Socks", quantity: 12, packed: false },
-//   { id: 3, description: "charger", quantity: 1, packed: true },
-// ];
+import Logo from "./logo.js";
+import Form from "./form.js";
+import { PackingList } from "./PackingList.js";
+import { Stats } from "./Stats.js";
 
 //the main component
 export default function App() {
@@ -15,92 +13,37 @@ export default function App() {
     setItems([...items, item]);
   }
 
-  return (
-    <div className="app">
-      <Logo />
-      <From addItem={addItem} />
-      <PackingList items={items} />
-      <Stats />
-    </div>
-  );
-}
+  function deleteItem(id) {
+    setItems((items) => items.filter((item) => item.id !== id));
+  }
 
-//only for the logo
-function Logo() {
-  return <h1>🌴 Far Away 👜</h1>;
-}
+  function toggleItem(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    );
+  }
 
-//form
-function From({ addItem }) {
-  const [description, setDes] = useState("");
-  const [quantity, setQuantity] = useState(1);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-
-    const newItem = { description, quantity, packed: false, id: new Date() };
-    console.log(newItem);
-
-    addItem(newItem);
-
-    setDes("");
-    setQuantity(1);
+  function clearList() {
+    let f = "";
+    if (items.length) {
+      f = window.confirm("Are you sure you want to delete all items?");
+    }
+    if (f) setItems([]);
   }
 
   return (
-    <form className="add-form" onSubmit={handleSubmit}>
-      <h3>What do you need for your 😍 Trip?</h3>
-      <select
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
-      >
-        {Array.from({ length: 20 }, (_, i) => i + 1).map((op) => (
-          <option value={op} key={op}>
-            {op}
-          </option>
-        ))}
-      </select>
-      <input
-        type="text"
-        placeholder="item..."
-        value={description}
-        onChange={(e) => setDes(e.target.value)}
+    <div className="app">
+      <Logo />
+      <Form addItem={addItem} />
+      <PackingList
+        items={items}
+        deleteItem={deleteItem}
+        toggleItem={toggleItem}
+        clearList={clearList}
       />
-      <button>Add</button>
-    </form>
-  );
-}
-
-//orginal bag list
-function PackingList({ items }) {
-  return (
-    <div className="list">
-      <ul>
-        {items.map((item) => (
-          <Item item={item} key={item.id} />
-        ))}
-      </ul>
+      <Stats items={items} />
     </div>
-  );
-}
-
-//items list component
-function Item({ item }) {
-  return (
-    <li>
-      <span style={item.packed ? { textDecoration: "line-through" } : {}}>
-        {item.quantity} {item.description}
-      </span>
-      <button>❌</button>
-    </li>
-  );
-}
-
-//for status
-function Stats() {
-  return (
-    <footer className="stats">
-      <em>👜 You have x items on you list, and you already packed x (x%)</em>
-    </footer>
   );
 }
