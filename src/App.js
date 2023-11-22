@@ -1,31 +1,47 @@
 import { useState } from "react";
 
-const initialItems = [
-  { id: 1, description: "Passports", quantity: 2, packed: false },
-  { id: 2, description: "Socks", quantity: 12, packed: false },
-  { id: 3, description: "charger", quantity: 1, packed: true },
-];
+// const initialItems = [
+//   { id: 1, description: "Passports", quantity: 2, packed: false },
+//   { id: 2, description: "Socks", quantity: 12, packed: false },
+//   { id: 3, description: "charger", quantity: 1, packed: true },
+// ];
+
+//the main component
 export default function App() {
+  //use state to add items in ui
+  const [items, setItems] = useState([]);
+
+  function addItem(item) {
+    setItems([...items, item]);
+  }
+
   return (
     <div className="app">
       <Logo />
-      <From />
-      <PackingList />
+      <From addItem={addItem} />
+      <PackingList items={items} />
       <Stats />
     </div>
   );
 }
+
+//only for the logo
 function Logo() {
   return <h1>🌴 Far Away 👜</h1>;
 }
-function From() {
+
+//form
+function From({ addItem }) {
   const [description, setDes] = useState("");
   const [quantity, setQuantity] = useState(1);
+
   function handleSubmit(e) {
     e.preventDefault();
 
     const newItem = { description, quantity, packed: false, id: new Date() };
     console.log(newItem);
+
+    addItem(newItem);
 
     setDes("");
     setQuantity(1);
@@ -54,17 +70,21 @@ function From() {
     </form>
   );
 }
-function PackingList() {
+
+//orginal bag list
+function PackingList({ items }) {
   return (
     <div className="list">
       <ul>
-        {initialItems.map((item) => (
+        {items.map((item) => (
           <Item item={item} key={item.id} />
         ))}
       </ul>
     </div>
   );
 }
+
+//items list component
 function Item({ item }) {
   return (
     <li>
@@ -75,6 +95,8 @@ function Item({ item }) {
     </li>
   );
 }
+
+//for status
 function Stats() {
   return (
     <footer className="stats">
